@@ -39,6 +39,8 @@ const navItems: NavItem[] = [
 	{ href: '/dashboard', label: 'Dashboard', icon: DashboardSquare01Icon },
 ];
 
+import { CommandMenu } from '@/components/command-menu';
+
 export function AppSidebar() {
 	const pathname = usePathname();
 
@@ -64,17 +66,7 @@ export function AppSidebar() {
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
-					<Link
-						href='/traces'
-						aria-label='Search traces'
-						className='flex size-6 shrink-0 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent'
-					>
-						<HugeiconsIcon
-							icon={Search01Icon}
-							strokeWidth={1.5}
-							className='size-3.5'
-						/>
-					</Link>
+					<CommandMenu />
 				</div>
 			</SidebarHeader>
 			<SidebarContent>

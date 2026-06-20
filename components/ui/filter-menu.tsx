@@ -14,6 +14,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu"
+import { useShortcuts } from "@/lib/hooks/use-shortcuts"
 
 export interface FilterOption {
   value: string
@@ -34,6 +35,11 @@ export function FilterMenu({ filters }: FilterMenuProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
+  const [open, setOpen] = React.useState(false)
+
+  useShortcuts({
+    f: () => setOpen((prev) => !prev),
+  })
 
   const handleToggle = (filterId: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -52,7 +58,7 @@ export function FilterMenu({ filters }: FilterMenuProps) {
   }
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger render={
         <Button variant="outline" size="icon" className="size-7 rounded-full text-muted-foreground border-border/40 hover:bg-muted/50 data-[state=open]:bg-muted/50 data-[state=open]:text-foreground">
           <HugeiconsIcon icon={FilterIcon} className="size-3.5" strokeWidth={1.5} />

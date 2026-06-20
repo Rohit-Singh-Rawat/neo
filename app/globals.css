@@ -118,7 +118,7 @@ tr:nth-child(7n) .animate-pie-step { animation-delay: -0.4s; animation-duration:
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-active: oklch(0.922 0.001 286.374);
   --sidebar-border: oklch(0.876 0.001 286.372);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-ring: oklch(0.647 0.133 243);
 }
 
 .dark {
@@ -156,7 +156,7 @@ tr:nth-child(7n) .animate-pie-step { animation-delay: -0.4s; animation-duration:
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-active: oklch(0.32 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.647 0.133 243);
 }
 
 @layer base {

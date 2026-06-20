@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import AgentationProvider from "@/components/AgentationProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalShortcuts } from "@/components/global-shortcuts";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -31,6 +32,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <TooltipProvider>
+          <GlobalShortcuts />
           {children}
           <Toaster />
         </TooltipProvider>
