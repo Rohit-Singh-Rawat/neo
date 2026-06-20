@@ -1,8 +1,15 @@
+import { Suspense } from "react"
+import { IssuesToolbar } from "@/components/issues/issues-toolbar"
+
 export default function IssuesPage() {
   return (
-    <div className="px-6 py-5">
-      <h1 className="text-lg font-medium tracking-tight">Issues</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Coming in the next phase.</p>
+    <div className="flex flex-col h-full">
+      <Suspense fallback={<div className="h-14 border-b border-border/40" />}>
+        <IssuesToolbar />
+      </Suspense>
+      <div className="flex-1 overflow-auto p-6">
+        {/* Board will go here */}
+      </div>
     </div>
-  );
+  )
 }
