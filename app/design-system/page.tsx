@@ -200,6 +200,32 @@ export default function DesignSystemPage() {
           <Button variant="link">Link</Button>
         </div>
       </Section>
+
+      <Section title="Borderless lists" description="Linear-style dense rows: no cell borders, hover background only, muted small header labels.">
+        <div className="rounded-lg border border-border">
+          <table className="w-full text-sm">
+            <thead>
+              <tr>
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Name</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr className="hover:bg-accent">
+                <td className="px-3 py-1.5">customer_support_agent</td>
+                <td className="px-3 py-1.5 text-destructive">Error</td>
+              </tr>
+              <tr className="hover:bg-accent">
+                <td className="px-3 py-1.5">rag_doc_qa</td>
+                <td className="px-3 py-1.5 text-success">Success</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Used by the Traces table — separation comes from row height and hover background, never a visible line.
+        </p>
+      </Section>
     </main>
   );
 }
