@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Neo",
   description: "LLM observability — traces, issues, and dashboards.",
+  appleWebApp: {
+    title: "MyWebSite",
+  },
 };
 
 export const viewport: import("next").Viewport = {

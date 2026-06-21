@@ -7,8 +7,9 @@ import { HugeiconsIcon, type IconSvgElement } from '@hugeicons/react';
 import {
 	Activity01Icon,
 	ArrowDown01Icon,
-	DashboardSquare01Icon,
+	DashboardCircleIcon,
 	KanbanIcon,
+	ExclamationMarkBigIcon,
 	Megaphone01Icon,
 	Search01Icon,
 } from '@hugeicons/core-free-icons';
@@ -44,14 +45,14 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-	{ href: '/dashboard', label: 'Dashboard', icon: DashboardSquare01Icon },
+	{ href: '/dashboard', label: 'Dashboard', icon: DashboardCircleIcon },
 	{ href: '/traces', label: 'Traces', icon: Activity01Icon },
 	{ href: '/alerts', label: 'Alerts', icon: Megaphone01Icon },
-	{ href: '/issues', label: 'Issues', icon: KanbanIcon },
+	{ href: '/issues', label: 'Issues', icon: ExclamationMarkBigIcon },
 ];
 
 const WORKSPACES = [
-	{ id: "neo", name: "Neo", icon: DashboardSquare01Icon, color: "text-primary" },
+	{ id: "neo", name: "Neo", icon: DashboardCircleIcon, color: "text-primary" },
 	{ id: "agentation", name: "Agentation", icon: Activity01Icon, color: "text-blue-600 dark:text-blue-500" },
 	{ id: "vercel", name: "Vercel", icon: KanbanIcon, color: "text-stone-900 dark:text-stone-100" },
 ];

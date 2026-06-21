@@ -2,8 +2,8 @@ import type { useRouter } from "next/navigation"
 import {
   Activity01Icon,
   AlertCircleIcon,
-  DashboardSquare01Icon,
-  KanbanIcon,
+  DashboardCircleIcon,
+  ExclamationMarkBigIcon,
   Loading03Icon,
   Megaphone01Icon,
   PaintBoardIcon,
@@ -17,7 +17,7 @@ export function registerGlobalActions(router: ReturnType<typeof useRouter>): () 
     {
       id: "go-to-issues",
       label: "Go to issues",
-      icon: (props) => <HugeiconsIcon icon={KanbanIcon} {...props} />,
+      icon: (props) => <HugeiconsIcon icon={ExclamationMarkBigIcon} {...props} />,
       shortcut: "I",
       group: "Navigation",
       contextTypes: ["global"],
@@ -37,7 +37,7 @@ export function registerGlobalActions(router: ReturnType<typeof useRouter>): () 
     {
       id: "go-to-dashboard",
       label: "Open dashboard",
-      icon: (props) => <HugeiconsIcon icon={DashboardSquare01Icon} {...props} />,
+      icon: (props) => <HugeiconsIcon icon={DashboardCircleIcon} {...props} />,
       shortcut: "D",
       group: "Navigation",
       contextTypes: ["global"],
