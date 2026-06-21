@@ -11,12 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  InputGroup,
-  InputGroupAddon,
-} from "@/components/ui/input-group"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { SearchIcon, Tick02Icon } from "@hugeicons/core-free-icons"
+import { Tick02Icon } from "@hugeicons/core-free-icons"
 
 function Command({
   className,
@@ -56,7 +52,7 @@ function CommandDialog({
       </DialogHeader>
       <DialogContent
         className={cn(
-          "top-[20%] translate-y-0 overflow-hidden rounded-xl! p-0 sm:max-w-[640px] shadow-2xl border border-border/20",
+          "top-[20%] translate-y-0 overflow-hidden rounded-xl! p-0 sm:max-w-[640px] shadow-2xl border border-border/50 dark:border-border",
           className
         )}
         showCloseButton={showCloseButton}
@@ -83,10 +79,6 @@ function CommandInput({
         )}
         {...props}
       />
-      <div className="hidden shrink-0 items-center gap-1.5 sm:flex">
-        <span className="text-[11px] font-medium text-muted-foreground">Ask NeoSigma</span>
-        <kbd className="inline-flex h-5 items-center rounded border border-border/40 bg-muted/50 px-1.5 font-mono text-[10px] font-medium text-muted-foreground">Tab</kbd>
-      </div>
     </div>
   )
 }
@@ -177,7 +169,7 @@ function CommandShortcut({
     <span
       data-slot="command-shortcut"
       className={cn(
-        "ml-auto inline-flex items-center gap-1 rounded border border-border/40 bg-muted/50 px-1.5 h-5 font-mono text-[10px] font-medium text-muted-foreground group-data-[selected=true]/command-item:border-border/60 group-data-[selected=true]/command-item:bg-background/50",
+        "ml-auto inline-flex items-center gap-1 rounded border border-border/50 dark:border-border bg-muted/50 px-1.5 h-5 font-mono text-[10px] font-medium text-muted-foreground group-data-[selected=true]/command-item:border-border/50 dark:border-border group-data-[selected=true]/command-item:bg-background/50",
         className
       )}
       {...props}

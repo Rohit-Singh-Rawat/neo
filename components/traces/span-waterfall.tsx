@@ -3,7 +3,17 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { formatCurrency, formatDuration } from "@/lib/format";
-import { buildChildrenMap, getTraceTimeBounds, handleSpanArrowKeys, spanTypeIcon } from "@/lib/spans";
+import {
+  buildChildrenMap,
+  estimateLabelWidth,
+  flattenTree,
+  getLabelPlacement,
+  getTraceTimeBounds,
+  handleSpanArrowKeys,
+  OUTSIDE_LABEL_GAP,
+  spanTypeIcon,
+} from "@/lib/spans";
+import { useFocusSelectedRow } from "@/hooks/use-focus-selected-row";
 import { cn } from "@/lib/utils";
 import type { Span } from "@/lib/data/schemas";
 
@@ -15,80 +25,12 @@ const ROW_PADDING_PX = 8;
 /** Minimum container width before horizontal scroll kicks in */
 const MIN_WIDTH_PX = 520;
 
-/**
- * Estimated average character width in px at text-sm (14px) font.
- * Used to estimate label width without DOM measurement.
- */
-const AVG_CHAR_WIDTH = 7.2;
-
-/** Padding inside the bar (left+right) when label is placed inside */
-const BAR_LABEL_PADDING = 16;
-
-/** Gap between bar edge and outside label */
-const OUTSIDE_LABEL_GAP = 6;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-type FlatSpan = { span: Span };
-
-function flattenTree(roots: Span[], byParent: Map<string | null, Span[]>): FlatSpan[] {
-  const result: FlatSpan[] = [];
-  function walk(node: Span) {
-    result.push({ span: node });
-    for (const child of byParent.get(node.id) ?? []) walk(child);
-  }
-  roots.forEach(walk);
-  return result;
-}
-
-/**
- * Estimate the rendered pixel width of a span label.
- * Includes: icon (~14px) + gap (6px) + text characters.
- */
-function estimateLabelWidth(span: Span): number {
-  const namePx = span.name.length * AVG_CHAR_WIDTH;
-  const durationPx = span.latencyMs ? formatDuration(span.latencyMs).length * AVG_CHAR_WIDTH + 4 : 0;
-  const modelPx = span.type === "llm" && span.model ? span.model.length * AVG_CHAR_WIDTH * 0.75 + 4 : 0;
-  const costPx = span.type === "llm" && span.costUsd !== undefined
-    ? formatCurrency(span.costUsd).length * AVG_CHAR_WIDTH * 0.75 + 4
-    : 0;
-  return 14 + 6 + namePx + durationPx + modelPx + costPx;
-}
-
-type LabelPlacement = "inside" | "right" | "left";
-
-/**
- * Decide where to render the label for a given bar position.
- *
- * Priority:
- *   1. "inside"  — bar is wide enough to hold the label with padding
- *   2. "right"   — there is enough space to the right of the bar
- *   3. "left"    — fall back to left (always has some space for the root span)
- */
-function getLabelPlacement(
-  barLeftPx: number,
-  barWidthPx: number,
-  timelineWidthPx: number,
-  labelWidthPx: number
-): LabelPlacement {
-  if (barWidthPx >= labelWidthPx + BAR_LABEL_PADDING) return "inside";
-  const spaceRight = timelineWidthPx - barLeftPx - barWidthPx;
-  if (spaceRight >= labelWidthPx + OUTSIDE_LABEL_GAP) return "right";
-  return "left";
-}
-
 // ─── Colour maps ──────────────────────────────────────────────────────────────
 
 const barBg: Record<Span["status"], string> = {
   success: "bg-success/20",
   error:   "bg-destructive/20",
   running: "bg-running/20",
-};
-
-const barBorder: Record<Span["status"], string> = {
-  success: "",
-  error:   "",
-  running: "",
 };
 
 /** Label text is always default — only the bar bg is status-colored */
@@ -108,21 +50,11 @@ type SpanWaterfallProps = {
 
 export function SpanWaterfall({ spans, selectedSpanId, onSelectSpan }: SpanWaterfallProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const rowRefs = useRef<Map<string, HTMLButtonElement> | null>(null);
+  const rowRefs = useRef<Map<string, HTMLElement> | null>(null);
   if (rowRefs.current === null) rowRefs.current = new Map();
-  const hasMounted = useRef(false);
   const [timelineWidthPx, setTimelineWidthPx] = useState(480);
 
-  // Arrow-key navigation moves `selectedSpanId` without touching the DOM, so the
-  // visible focus ring would otherwise stay behind. Skip the first run so mounting
-  // doesn't steal focus from wherever the page already put it.
-  useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return;
-    }
-    rowRefs.current!.get(selectedSpanId)?.focus();
-  }, [selectedSpanId]);
+  useFocusSelectedRow(selectedSpanId, rowRefs);
 
   // Track the actual pixel width of the inner timeline area so we can
   // calculate label placements without DOM measurement per-label.

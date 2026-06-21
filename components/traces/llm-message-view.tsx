@@ -56,8 +56,8 @@ function MessageCard({ message }: { message: ChatMessage }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border bg-background shadow-sm">
-      <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/30 px-2.5 py-1.5">
+    <div className="overflow-hidden rounded-lg border border-border/50 dark:border-border bg-background shadow-sm">
+      <div className="flex items-center justify-between gap-2 border-b border-border/50 dark:border-border bg-muted/30 px-2.5 py-1.5">
         <div className="flex items-center gap-2">
           <span
             className={cn(
@@ -92,7 +92,7 @@ function MessageCard({ message }: { message: ChatMessage }) {
         {message.tool_calls && message.tool_calls.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {message.tool_calls.map((call, callIndex) => (
-              <span key={callIndex} className="rounded-md border border-border/50 bg-muted/50 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
+              <span key={callIndex} className="rounded-md border border-border/50 dark:border-border bg-muted/50 px-2 py-0.5 font-mono text-[11px] text-muted-foreground">
                 {call.name}()
               </span>
             ))}

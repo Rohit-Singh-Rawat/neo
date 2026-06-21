@@ -1,8 +1,24 @@
+import { z } from "zod";
 import rawData from "@/data/traces.json";
-import { TracesFileSchema, type Trace } from "./schemas";
+import { TraceSchema, type Trace } from "./schemas";
 
-const parsed = TracesFileSchema.parse(rawData);
-const traceList: readonly Trace[] = parsed.traces;
+// Each trace is validated independently (not as one array .parse()), so a
+// single malformed entry is skipped and logged rather than crashing every
+// route that reads traces — same resilience strategy as lib/data/slack-cards.ts.
+const RawTracesFileSchema = z.object({
+  $schema_note: z.string(),
+  traces: z.array(z.unknown()),
+});
+
+const { traces: rawTraces } = RawTracesFileSchema.parse(rawData);
+const traceList: readonly Trace[] = rawTraces.flatMap((candidate) => {
+  const result = TraceSchema.safeParse(candidate);
+  if (!result.success) {
+    console.error("Skipping malformed trace:", result.error.message);
+    return [];
+  }
+  return [result.data];
+});
 const traceById = new Map<string, Trace>(traceList.map((trace) => [trace.id, trace]));
 
 export function getTraces(): readonly Trace[] {

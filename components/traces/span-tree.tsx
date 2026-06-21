@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { formatCurrency, formatDuration } from "@/lib/format";
 import { buildChildrenMap, handleSpanArrowKeys, spanTypeIcon } from "@/lib/spans";
+import { useFocusSelectedRow } from "@/hooks/use-focus-selected-row";
 import { StatusIndicator } from "@/components/design-system/status-indicator";
 import { cn } from "@/lib/utils";
 import type { Span } from "@/lib/data/schemas";
@@ -51,33 +52,49 @@ type SpanTreeProps = {
 
 export function SpanTree({ spans, selectedSpanId, onSelectSpan }: SpanTreeProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
-  const rowRefs = useRef<Map<string, HTMLDivElement> | null>(null);
+  const rowRefs = useRef<Map<string, HTMLElement> | null>(null);
   if (rowRefs.current === null) rowRefs.current = new Map();
-  const hasMounted = useRef(false);
 
-  // Keyboard-driven selection (arrow keys) moves `selectedSpanId` but never touches the
-  // DOM directly, so without this the visible focus ring stays on whatever was last
-  // clicked/tabbed-to while the "selected" row moves elsewhere. Skip the first run so
-  // mounting the tree doesn't steal focus from wherever the page already put it.
-  useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true;
-      return;
-    }
-    rowRefs.current!.get(selectedSpanId)?.focus();
-  }, [selectedSpanId]);
+  useFocusSelectedRow(selectedSpanId, rowRefs);
 
-  const { childrenByParent, roots, visibleSpans } = useMemo(() => {
+  const { childrenByParent, visibleSpans } = useMemo(() => {
     const map = buildChildrenMap(spans);
     const rootSpans = map.get(null) ?? [];
     return {
       childrenByParent: map,
-      roots: rootSpans,
       visibleSpans: getVisibleSpans(rootSpans, map, collapsedIds),
     };
   }, [spans, collapsedIds]);
 
+  // Left/Right collapse/expand + move-to-parent/first-child, per the APG tree view
+  // pattern. Lives here (not in the shared handleSpanArrowKeys) because collapse
+  // state only exists for this tree — the waterfall view has no such concept.
   function handleKeyDown(event: React.KeyboardEvent) {
+    if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+      const current = visibleSpans.find((fs) => fs.span.id === selectedSpanId)?.span;
+      if (!current) return;
+      const children = childrenByParent.get(current.id) ?? [];
+      const isCollapsed = collapsedIds.has(current.id);
+      event.preventDefault();
+
+      if (event.key === "ArrowRight") {
+        if (children.length > 0 && isCollapsed) {
+          setCollapsedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(current.id);
+            return next;
+          });
+        } else if (children.length > 0) {
+          onSelectSpan(children[0].id);
+        }
+      } else if (children.length > 0 && !isCollapsed) {
+        setCollapsedIds((prev) => new Set(prev).add(current.id));
+      } else if (current.parentId) {
+        onSelectSpan(current.parentId);
+      }
+      return;
+    }
+
     // We pass the visible spans so up/down arrow only navigates visible items
     handleSpanArrowKeys(
       event,
@@ -150,6 +167,7 @@ export function SpanTree({ spans, selectedSpanId, onSelectSpan }: SpanTreeProps)
                 role="treeitem"
                 aria-selected={isSelected}
                 aria-expanded={hasChildren ? !isCollapsed : undefined}
+                aria-level={depth + 1}
                 tabIndex={isSelected ? 0 : -1}
                 onClick={() => onSelectSpan(span.id)}
                 onKeyDown={(e) => {
@@ -164,14 +182,15 @@ export function SpanTree({ spans, selectedSpanId, onSelectSpan }: SpanTreeProps)
                   !isSelected && span.status === "error" && "bg-destructive/10 hover:bg-destructive/20"
                 )}
               >
-                {/* Collapse toggle */}
-                <div className="relative flex w-5 shrink-0 items-center justify-center">
+                {/* Collapse toggle — size-6 (24px) hit area meets WCAG 2.5.8's minimum
+                    target size while the visible icon stays small */}
+                <div className="relative flex w-6 shrink-0 items-center justify-center">
                   {hasChildren && (
                     <button
                       type="button"
                       onClick={(e) => toggleCollapse(e, span.id)}
                       aria-label={isCollapsed ? "Expand" : "Collapse"}
-                      className="flex size-4 shrink-0 items-center justify-center rounded-sm hover:bg-muted/50"
+                      className="flex size-6 shrink-0 items-center justify-center rounded-sm hover:bg-muted/50"
                     >
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}

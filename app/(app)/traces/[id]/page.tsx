@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { SpanDetailPanel } from "@/components/traces/span-detail-panel";
 import { SpanExplorer, type SpanView } from "@/components/traces/span-explorer";
 import { TraceSummary } from "@/components/traces/trace-summary";
-import { ResizableSidebar } from "@/components/layout/resizable-sidebar";
+import { TraceDetailLayout } from "@/components/traces/trace-detail-layout";
 import { getTraceById } from "@/lib/data/traces";
+import { getCardThreadByTraceId } from "@/lib/data/slack-cards";
 
 type TraceDetailPageProps = {
   params: Promise<{ id: string }>;
@@ -17,25 +18,22 @@ export default async function TraceDetailPage({ params, searchParams }: TraceDet
   const trace = getTraceById(id);
   if (!trace) notFound();
 
+  const cardThread = getCardThreadByTraceId(trace.id);
+
   const rootSpan = trace.spans.find((span) => span.parentId === null);
   const selectedSpan = trace.spans.find((span) => span.id === spanParam) ?? rootSpan;
   if (!selectedSpan) notFound();
 
   return (
     <div className="flex h-full flex-col">
-      <TraceSummary trace={trace} />
-      <div className="flex flex-1 overflow-hidden">
-        <ResizableSidebar
-          key={view}
-          defaultWidth={view === "waterfall" ? 500 : 420}
-          className="border-r border-border"
-        >
-          <SpanExplorer spans={trace.spans} selectedSpanId={selectedSpan.id} view={view} />
-        </ResizableSidebar>
-        <div className="flex-1 min-w-0 overflow-y-auto">
-          <SpanDetailPanel span={selectedSpan} />
-        </div>
-      </div>
+      <TraceSummary trace={trace} cardThread={cardThread} />
+      <TraceDetailLayout
+        hasSpanParam={!!spanParam}
+        view={view}
+        defaultSidebarWidth={view === "waterfall" ? 500 : 420}
+        explorer={<SpanExplorer spans={trace.spans} selectedSpanId={selectedSpan.id} view={view} />}
+        detail={<SpanDetailPanel span={selectedSpan} />}
+      />
     </div>
   );
 }

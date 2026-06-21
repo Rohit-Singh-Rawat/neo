@@ -23,13 +23,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { HugeiconsIcon } from "@hugeicons/react"
-import { SidebarLeftIcon } from "@hugeicons/core-free-icons"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "15rem"
-const SIDEBAR_WIDTH_MOBILE = "18rem"
+const SIDEBAR_WIDTH_MOBILE = "13rem"
 const SIDEBAR_WIDTH_ICON = "3rem"
 const SIDEBAR_KEYBOARD_SHORTCUT = "b"
 
@@ -255,6 +253,7 @@ function Sidebar({
 function SidebarTrigger({
   className,
   onClick,
+  "aria-label": ariaLabel = "Toggle sidebar",
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar()
@@ -265,6 +264,7 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon-sm"
+      aria-label={ariaLabel}
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event)
@@ -272,7 +272,12 @@ function SidebarTrigger({
       }}
       {...props}
     >
-      <HugeiconsIcon icon={SidebarLeftIcon} strokeWidth={2} />
+      <svg width="1em" height="1em" viewBox="0 0 16 16" role="img" focusable="false" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="size-4 opacity-70 group-hover/button:opacity-100 transition-opacity">
+        <g fill="currentColor">
+          <path fillRule="evenodd" clipRule="evenodd" d="M4.25 2C2.45508 2 1 3.45508 1 5.25V10.75C1 12.5449 2.45508 14 4.25 14H11.75C13.5449 14 15 12.5449 15 10.75V5.25C15 3.45508 13.5449 2 11.75 2H4.25ZM2.5 5.5C2.5 4.39543 3.39543 3.5 4.5 3.5H11.5C12.6046 3.5 13.5 4.39543 13.5 5.5V10.5C13.5 11.6046 12.6046 12.5 11.5 12.5H4.5C3.39543 12.5 2.5 11.6046 2.5 10.5V5.5Z" />
+          <rect x="4" y="5" width="1.5" height="6" rx="0.75" />
+        </g>
+      </svg>
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )
@@ -308,7 +313,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-border/40 md:peer-data-[variant=inset]:shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+        "relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-border/50 dark:border-border md:peer-data-[variant=inset]:shadow-[0_2px_8px_rgba(0,0,0,0.02)] md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className
       )}
       {...props}
@@ -511,6 +516,7 @@ function SidebarMenuButton({
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
   } & VariantProps<typeof sidebarMenuButtonVariants>) {
   const { isMobile, state } = useSidebar()
+  const showTooltip = !!tooltip && state === "collapsed" && !isMobile
   const comp = useRender({
     defaultTagName: "button",
     props: mergeProps<"button">(
@@ -519,7 +525,7 @@ function SidebarMenuButton({
       },
       props
     ),
-    render: !tooltip ? render : <TooltipTrigger render={render} />,
+    render: showTooltip ? <TooltipTrigger render={render} /> : render,
     state: {
       slot: "sidebar-menu-button",
       sidebar: "menu-button",
@@ -528,7 +534,7 @@ function SidebarMenuButton({
     },
   })
 
-  if (!tooltip) {
+  if (!showTooltip) {
     return comp
   }
 

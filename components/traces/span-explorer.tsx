@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { BarChartHorizontalIcon, HierarchySquare01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,20 @@ type SpanExplorerProps = {
 export function SpanExplorer({ spans, selectedSpanId, view }: SpanExplorerProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   function navigate(next: { span?: string; view?: SpanView }) {
-    const params = new URLSearchParams();
-    const span = next.span ?? selectedSpanId;
-    const nextView = next.view ?? view;
-    params.set("span", span);
-    if (nextView !== "tree") params.set("view", nextView);
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (next.span) {
+      params.set("span", next.span);
+    }
+    
+    if (next.view) {
+      if (next.view === "tree") params.delete("view");
+      else params.set("view", next.view);
+    }
+
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }
 

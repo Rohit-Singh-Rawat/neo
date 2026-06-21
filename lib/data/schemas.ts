@@ -63,8 +63,3 @@ export const TraceSchema = z.object({
 });
 
 export type Trace = z.infer<typeof TraceSchema>;
-
-export const TracesFileSchema = z.object({
-  $schema_note: z.string(),
-  traces: z.array(TraceSchema),
-});

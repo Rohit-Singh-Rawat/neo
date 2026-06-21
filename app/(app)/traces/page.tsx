@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle } from "@/components/ui/empty";
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyTitle, EmptyMedia } from "@/components/ui/empty";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Activity01Icon, Search01Icon } from "@hugeicons/core-free-icons";
 import { TraceToolbar, type OptionalColumn } from "@/components/traces/trace-toolbar";
 import { TraceTable } from "@/components/traces/trace-table";
 import { filterTraces, getTraces, getUniqueModels, getUniqueTags, sortTraces, type TraceSort } from "@/lib/data/traces";
@@ -55,6 +57,7 @@ export default async function TracesPage({ searchParams }: TracesPageProps) {
       {allTraces.length === 0 ? (
         <Empty className="flex-1">
           <EmptyHeader>
+            <EmptyMedia variant="icon"><HugeiconsIcon icon={Activity01Icon} /></EmptyMedia>
             <EmptyTitle>No traces yet</EmptyTitle>
             <EmptyDescription>
               You haven&apos;t recorded any traces. Integrate the SDK to get started.
@@ -67,6 +70,7 @@ export default async function TracesPage({ searchParams }: TracesPageProps) {
       ) : traces.length === 0 ? (
         <Empty className="flex-1">
           <EmptyHeader>
+            <EmptyMedia variant="icon"><HugeiconsIcon icon={Search01Icon} /></EmptyMedia>
             <EmptyTitle>No matching traces</EmptyTitle>
             <EmptyDescription>
               Nothing matches the current search and filter. Try clearing them.

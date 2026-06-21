@@ -2,10 +2,12 @@ import { StatusIndicator } from "@/components/design-system/status-indicator";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDuration, formatTokenCount } from "@/lib/format";
 import type { Trace } from "@/lib/data/schemas";
-import { cn } from "@/lib/utils";
+import type { SlackMessage } from "@/lib/data/slack-schemas";
+import { SlackCardPreview } from "@/components/slack/slack-card-preview";
 
 type TraceSummaryProps = {
   trace: Trace;
+  cardThread?: SlackMessage[];
 };
 
 function TagBadge({ tag }: { tag: string }) {
@@ -23,7 +25,7 @@ function TagBadge({ tag }: { tag: string }) {
   if (normalized === "production") {
     return (
       <Badge variant="outline" className="text-foreground">
-        <span className="mr-1.5 size-2 shrink-0 rounded-full bg-emerald-500" aria-hidden="true" />
+        <span className="mr-1.5 size-2 shrink-0 rounded-full bg-success" aria-hidden="true" />
         {tag}
       </Badge>
     );
@@ -37,7 +39,7 @@ function TagBadge({ tag }: { tag: string }) {
   );
 }
 
-export function TraceSummary({ trace }: TraceSummaryProps) {
+export function TraceSummary({ trace, cardThread }: TraceSummaryProps) {
   const rootSpan = trace.spans.find((span) => span.parentId === null);
 
   return (
@@ -62,12 +64,12 @@ export function TraceSummary({ trace }: TraceSummaryProps) {
           {trace.tags.map((tag) => (
             <TagBadge key={tag} tag={tag} />
           ))}
+          {cardThread && (
+            <SlackCardPreview thread={cardThread} />
+          )}
         </div>
       </div>
 
-      {/* Slack-card preview connector: filled in during the Slack-cards phase for
-          error/thumbs-down traces. Intentionally left empty rather than a disabled
-          button — see specs/2026-06-20-traces-page-design.md "Deferred on purpose". */}
     </div>
   );
 }
