@@ -53,11 +53,14 @@ export function ResizableSidebar({
   return (
     <div style={{ width: `${width}px` }} className={cn("relative shrink-0 flex flex-col", className)}>
       {children}
+      {/* WAI-ARIA separator pattern requires this element be focusable and keyboard-operable when it resizes adjoining panels: https://www.w3.org/WAI/ARIA/apg/patterns/separator/ */}
+      {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
       <div
         role="separator"
         aria-orientation="vertical"
         aria-label="Resize panel"
         aria-valuenow={width}
+        aria-valuetext={`${width} pixels`}
         aria-valuemin={minWidth}
         aria-valuemax={maxWidth}
         tabIndex={0}
@@ -73,6 +76,7 @@ export function ResizableSidebar({
           }
         }}
       />
+      {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
     </div>
   );
 }

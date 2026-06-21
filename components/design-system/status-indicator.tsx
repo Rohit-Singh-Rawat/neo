@@ -31,17 +31,17 @@ function WarningIcon({ className }: { className?: string }) {
 
 function RunningIcon({ className }: { className?: string }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className={className} xmlns="http://www.w3.org/2000/svg">
+      <circle cx="8" cy="8" r="7.25" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
       <circle 
-        cx="12" cy="12" r="3.75" 
+        cx="8" cy="8" r="2.5" 
         fill="none" 
         stroke="currentColor" 
-        strokeWidth="7.5"
+        strokeWidth="5"
         pathLength="100"
         strokeDasharray="100 100"
         className="animate-pie-step text-running"
-        transform="rotate(-90 12 12)"
+        transform="rotate(-90 8 8)"
       />
     </svg>
   );
@@ -74,13 +74,19 @@ type StatusIndicatorProps = {
   className?: string;
 };
 
+/**
+ * Run-status dot for traces/spans (success/error/running/warning) — intentionally
+ * distinct from `components/issues/issue-icons.tsx`'s issue *workflow* status
+ * vocabulary (todo/in-progress/done/...). The two share the word "status" but
+ * are different domain concepts; do not merge them.
+ */
 export function StatusIndicator({ status, showLabel = false, className }: StatusIndicatorProps) {
   const Icon = statusIcon[status];
   
   return (
     <span className={cn("inline-flex items-center gap-1.5", statusColorClassName[status], className)}>
       <Icon className="shrink-0" />
-      {showLabel && <span className="text-sm">{statusLabels[status]}</span>}
+      <span className={showLabel ? "text-sm" : "sr-only"}>{statusLabels[status]}</span>
     </span>
   );
 }

@@ -1,12 +1,12 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface PageToolbarProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type PageToolbarProps = React.HTMLAttributes<HTMLDivElement>
 
 export function PageToolbar({ className, children, ...props }: PageToolbarProps) {
   return (
     <div 
-      className={cn("flex h-14 w-full shrink-0 items-center justify-between border-b border-border/40 bg-background px-6", className)} 
+      className={cn("flex flex-row h-14 w-full shrink-0 items-center justify-between bg-background px-4 sm:px-6 py-0 gap-2 sm:gap-0", className)} 
       {...props}
     >
       {children}
@@ -24,7 +24,7 @@ export function PageToolbarLeft({ className, children, ...props }: React.HTMLAtt
 
 export function PageToolbarRight({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("flex items-center gap-1.5", className)} {...props}>
+    <div className={cn("flex items-center gap-1.5 flex-wrap", className)} {...props}>
       {children}
     </div>
   )

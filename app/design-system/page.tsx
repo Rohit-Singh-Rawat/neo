@@ -185,7 +185,7 @@ export default function DesignSystemPage() {
 
       <Section title="Motion" description="--duration-fast 120ms · --duration-base 180ms · --duration-slow 280ms · --ease-out cubic-bezier(0.16,1,0.3,1)">
         <div className="flex items-center gap-6">
-          <div className="size-16 rounded-lg bg-primary/10 border border-primary/20 transition-all duration-150 ease-[var(--ease-out)] hover:scale-110 hover:bg-primary/20" />
+          <div className="size-16 rounded-lg bg-primary/10 border border-primary/20 transition-[transform,background-color] duration-150 ease-(--ease-out) hover:scale-110 hover:bg-primary/20" />
           <p className="text-xs text-muted-foreground">Hover — scale + tint, eased with the same curve used app-wide.</p>
         </div>
       </Section>
